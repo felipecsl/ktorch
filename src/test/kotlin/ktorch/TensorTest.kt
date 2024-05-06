@@ -45,32 +45,48 @@ class TensorTest {
     tensor[1, 2] = 3.0
     assertThat(tensor[1, 2]).isEqualTo(tensor<Double>(1) { this[0] = 3.0 })
     assertThat(tensor[1]).isEqualTo(tensor<Double>(5) { this[2] = 3.0 })
-    val actual = tensor.data()
     val expected = arrayOf(
       arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
       arrayOf(0.0, 0.0, 3.0, 0.0, 0.0),
       arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
     )
-    assertThat(actual).isEqualTo(expected)
+    assertThat(tensor.data()).isEqualTo(expected)
   }
 
   @Test fun `set single cell`() {
     val tensor = tensor<Double>(3)
     tensor[1] = 4.0
-    val actual = tensor.data()
     val expected = arrayOf(arrayOf(0.0, 4.0, 0.0))
-    assertThat(actual).isEqualTo(expected)
+    assertThat(tensor.data()).isEqualTo(expected)
   }
 
   @Test fun `set row`() {
     val tensor = Tensor.zeros<Double>(3 to 5)
     tensor[1] = 4.0
-    val actual = tensor.data()
     val expected = arrayOf(
       arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
       arrayOf(4.0, 4.0, 4.0, 4.0, 4.0),
       arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
     )
-    assertThat(actual).isEqualTo(expected)
+    assertThat(tensor.data()).isEqualTo(expected)
+  }
+
+  @Test fun `plus and plusAssign`() {
+    val tensor = Tensor.zeros<Double>(3 to 5)
+    tensor[1, 1] = 2.0
+    tensor[1, 1] = tensor[1, 1] + 3.0
+    val expected = arrayOf(
+      arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
+      arrayOf(0.0, 5.0, 0.0, 0.0, 0.0),
+      arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
+    )
+    assertThat(tensor.data()).isEqualTo(expected)
+    tensor[1, 1] += 1.0
+    val newExpected = arrayOf(
+      arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
+      arrayOf(0.0, 6.0, 0.0, 0.0, 0.0),
+      arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
+    )
+    assertThat(tensor.data()).isEqualTo(newExpected)
   }
 }
