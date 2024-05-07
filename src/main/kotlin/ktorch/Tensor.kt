@@ -9,7 +9,7 @@ class Tensor<T: Any> {
   val cols: Int get() = data[0].size
   val kClass: KClass<T>
 
-  private constructor(data: List<List<T>>, kClass: KClass<T>) {
+  constructor(data: List<List<T>>, kClass: KClass<T>) {
     this.data = data.map { it.toMutableList() }.toMutableList()
     this.kClass = kClass
   }
@@ -88,6 +88,18 @@ class Tensor<T: Any> {
     return data.map {
       it.toArray { arrayOfNulls<Any>(cols) }
     }.toArray { arrayOf<Any>() }
+  }
+
+  fun sum(): Tensor<T> {
+    val newData = data.flatten().reduce { acc, t ->
+      when (kClass) {
+        Double::class -> (acc as Double).plus(t as Double) as T
+        Float::class -> (acc as Float).plus(t as Float) as T
+        Int::class -> (acc as Int).plus(t as Int) as T
+        else -> throw IllegalArgumentException("Unsupported type: $kClass")
+      }
+    }
+    return Tensor(listOf(listOf(newData)), kClass)
   }
 
   fun item(): T {
@@ -197,6 +209,12 @@ class Tensor<T: Any> {
   companion object {
     inline fun <reified T : Any> zeros(xy: Pair<Int, Int>): Tensor<T> {
       return Tensor(xy.first, xy.second, T::class)
+    }
+
+    inline fun <reified T: Any> of(
+      data: List<T>
+    ): Tensor<T> {
+      return Tensor(listOf(data), T::class)
     }
 
     inline fun <reified T : Any> tensor(

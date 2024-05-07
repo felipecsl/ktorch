@@ -98,4 +98,9 @@ class TensorTest {
     assertThat(tensor.double().data()).isEqualTo(arrayOf(arrayOf(1.0, 0.0, 0.0)))
     assertThat(tensor.double().int().data()).isEqualTo(arrayOf(arrayOf(1, 0, 0)))
   }
+
+  @Test fun `tensor sum`() {
+    val tensor = Tensor.of<Int>(listOf(1, 2, 3))
+    assertThat(tensor.sum().item()).isEqualTo(6)
+  }
 }
