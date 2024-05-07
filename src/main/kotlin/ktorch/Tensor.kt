@@ -42,6 +42,13 @@ class Tensor<T: Any> {
     }.toArray { arrayOf<Any>() }
   }
 
+  fun item(): T {
+    if (rows != 1 || cols != 1) {
+      throw IllegalArgumentException("Tensor is not a 1x1 tensor")
+    }
+    return data[0][0]
+  }
+
   override fun equals(other: Any?): Boolean {
     return if (this === other) true
     else if (other?.javaClass != javaClass) false
@@ -64,8 +71,13 @@ class Tensor<T: Any> {
   }
 
   override fun toString(): String {
-    return data.joinToString(",\n", prefix = "[", postfix = "]") {
-      it.joinToString(", ", prefix = "[", postfix = "]")
+    return if (rows == 1) {
+      // this matches the PyTorch behavior
+      data[0].joinToString(", ", prefix = "tensor([", postfix = "])")
+    } else {
+      data.joinToString(",\n", prefix = "tensor([", postfix = "])") {
+        it.joinToString(", ", prefix = "[", postfix = "]")
+      }
     }
   }
 

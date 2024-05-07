@@ -29,14 +29,14 @@ class TensorTest {
 
   @Test fun `tensor init and toString()`() {
     var tensor = tensor<Double>(3)
-    assertThat(tensor.toString()).isEqualTo("[[0.0, 0.0, 0.0]]")
+    assertThat(tensor.toString()).isEqualTo("tensor([0.0, 0.0, 0.0])")
     tensor = tensor<Double>(1) { this[0] = 3.0 }
-    assertThat(tensor.toString()).isEqualTo("[[3.0]]")
+    assertThat(tensor.toString()).isEqualTo("tensor([3.0])")
     tensor = Tensor.zeros<Double>(3 to 5)
     assertThat(tensor.toString()).isEqualTo("""
-      [[0.0, 0.0, 0.0, 0.0, 0.0],
+      tensor([[0.0, 0.0, 0.0, 0.0, 0.0],
       [0.0, 0.0, 0.0, 0.0, 0.0],
-      [0.0, 0.0, 0.0, 0.0, 0.0]]
+      [0.0, 0.0, 0.0, 0.0, 0.0]])
     """.trimIndent())
   }
 
@@ -44,6 +44,7 @@ class TensorTest {
     val tensor = Tensor.zeros<Double>(3 to 5)
     tensor[1, 2] = 3.0
     assertThat(tensor[1, 2]).isEqualTo(tensor<Double>(1) { this[0] = 3.0 })
+    assertThat(tensor[1, 2].item()).isEqualTo(3.0)
     assertThat(tensor[1]).isEqualTo(tensor<Double>(5) { this[2] = 3.0 })
     val expected = arrayOf(
       arrayOf(0.0, 0.0, 0.0, 0.0, 0.0),
