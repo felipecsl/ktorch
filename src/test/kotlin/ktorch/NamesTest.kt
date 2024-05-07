@@ -10,7 +10,7 @@ class NamesTest {
     val classLoader = javaClass.classLoader
     val file = File(classLoader.getResource("names.txt")!!.file)
     val words = file.readLines()
-    val tensor = zeros<Int>(27 to 27)
+    val N = zeros<Int>(27 to 27)
     val chars = 'a'..'z'
     val stoi = chars.mapIndexed { index, c -> c to index + 1 }.toMap().toMutableMap()
     stoi['.'] = 0
@@ -22,15 +22,17 @@ class NamesTest {
         val c2 = ch2.toChar()
         val ix1 = stoi[c1]!!
         val ix2 = stoi[c2]!!
-        tensor[ix1, ix2] += 1
+        N[ix1, ix2] += 1
       }
     }
-    tensor.data().mapIndexed { i, row ->
+    N.data().mapIndexed { i, row ->
       (row as Array<Any>).mapIndexed { j, _ ->
-        print("(${itos[i]}${itos[j]} ${tensor[i, j].item()}) ")
+        print("(${itos[i]}${itos[j]} ${N[i, j].item()}) ")
       }
       println()
     }
-    println("N[0]=" + tensor[0])
+    val p = N[0].float()
+    val p0 = p / p.sum()
+    println(p0)
   }
 }

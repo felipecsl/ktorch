@@ -103,4 +103,11 @@ class TensorTest {
     val tensor = Tensor.of<Int>(listOf(1, 2, 3))
     assertThat(tensor.sum().item()).isEqualTo(6)
   }
+
+  @Test fun `division`() {
+    val tensor = Tensor.of<Int>(listOf(1, 2, 3))
+    val actual = tensor.float() / 2.0
+    val expected = Tensor.of<Float>(listOf(0.5f, 1.0f, 1.5f))
+    assertThat(actual).isEqualTo(expected)
+  }
 }

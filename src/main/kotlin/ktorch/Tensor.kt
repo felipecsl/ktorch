@@ -152,7 +152,13 @@ class Tensor<T: Any> {
   }
 
   @Suppress("UNCHECKED_CAST")
-  operator fun plus(other: T): Tensor<T> {
+  operator fun plus(other: Any): Tensor<T> {
+    if (other is Tensor<*>) {
+      return plus(other.item())
+    }
+    if (!kClass.javaObjectType.isAssignableFrom(other.javaClass)) {
+      return plus(other.asType(kClass))
+    }
     val newData = data.map { it.toMutableList() }.toMutableList()
     (0 until rows).forEach { row ->
       (0 until cols).forEach { col ->
@@ -161,6 +167,28 @@ class Tensor<T: Any> {
           Double::class -> newData[row][col] = (v as Double).plus(other as Double) as T
           Float::class -> newData[row][col] = (v as Float).plus(other as Float) as T
           Int::class -> newData[row][col] = (v as Int).plus(other as Int) as T
+          else -> throw IllegalArgumentException("Unsupported type: $kClass")
+        }
+      }
+    }
+    return Tensor(newData, kClass)
+  }
+
+  operator fun div(other: Any): Tensor<T> {
+    if (other is Tensor<*>) {
+      return div(other.item())
+    }
+    if (!kClass.javaObjectType.isAssignableFrom(other.javaClass)) {
+      return div(other.asType(kClass))
+    }
+    val newData = data.map { it.toMutableList() }.toMutableList()
+    (0 until rows).forEach { row ->
+      (0 until cols).forEach { col ->
+        val v = newData[row][col]
+        when (kClass) {
+          Double::class -> newData[row][col] = (v as Double).div(other as Double) as T
+          Float::class -> newData[row][col] = (v as Float).div(other as Float) as T
+          Int::class -> newData[row][col] = (v as Int).div(other as Int) as T
           else -> throw IllegalArgumentException("Unsupported type: $kClass")
         }
       }
@@ -226,6 +254,36 @@ class Tensor<T: Any> {
         tensor.apply { init() }
       } else {
         tensor
+      }
+    }
+
+    private inline fun <T: Any> Any.asType(klass: KClass<T>): T {
+      return when (klass) {
+        Double::class -> {
+          return when (this) {
+            is Double -> this as T
+            is Float -> this.toDouble() as T
+            is Int -> this.toDouble() as T
+            else -> throw IllegalArgumentException("Unsupported type: $klass")
+          }
+        }
+        Float::class -> {
+          return when (this) {
+            is Float -> this as T
+            is Double -> this.toFloat() as T
+            is Int -> this.toFloat() as T
+            else -> throw IllegalArgumentException("Unsupported type: $klass")
+          }
+        }
+        Int::class -> {
+          return when (this) {
+            is Int -> this as T
+            is Double -> this.toInt() as T
+            is Float -> this.toInt() as T
+            else -> throw IllegalArgumentException("Unsupported type: $klass")
+          }
+        }
+        else -> throw IllegalArgumentException("Unsupported type: $klass")
       }
     }
   }
