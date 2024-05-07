@@ -90,4 +90,12 @@ class TensorTest {
     )
     assertThat(tensor.data()).isEqualTo(newExpected)
   }
+
+  @Test fun `data conversion`() {
+    val tensor = tensor<Int>(3) { this[0] = 1 }
+    assertThat(tensor.data()).isEqualTo(arrayOf(arrayOf(1, 0, 0)))
+    assertThat(tensor.float().data()).isEqualTo(arrayOf(arrayOf(1f, 0f, 0f)))
+    assertThat(tensor.double().data()).isEqualTo(arrayOf(arrayOf(1.0, 0.0, 0.0)))
+    assertThat(tensor.double().int().data()).isEqualTo(arrayOf(arrayOf(1, 0, 0)))
+  }
 }

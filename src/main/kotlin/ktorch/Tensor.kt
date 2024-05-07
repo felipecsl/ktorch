@@ -36,6 +36,54 @@ class Tensor<T: Any> {
     return Tensor(data, kClass)
   }
 
+  fun float(): Tensor<Float> {
+    if (kClass == Float::class) {
+      return this as Tensor<Float>
+    }
+    val newData = data.map {
+      it.map { c ->
+        when (kClass) {
+          Double::class -> (c as Double).toFloat()
+          Int::class -> (c as Int).toFloat()
+          else -> throw IllegalArgumentException("Unsupported type: $kClass")
+        }
+      }
+    }
+    return Tensor(newData, Float::class)
+  }
+
+  fun double(): Tensor<Double> {
+    if (kClass == Double::class) {
+      return this as Tensor<Double>
+    }
+    val newData = data.map {
+      it.map { c ->
+        when (kClass) {
+          Float::class -> (c as Float).toDouble()
+          Int::class -> (c as Int).toDouble()
+          else -> throw IllegalArgumentException("Unsupported type: $kClass")
+        }
+      }
+    }
+    return Tensor(newData, Double::class)
+  }
+
+  fun int(): Tensor<Int> {
+    if (kClass == Int::class) {
+      return this as Tensor<Int>
+    }
+    val newData = data.map {
+      it.map { c ->
+        when (kClass) {
+          Float::class -> (c as Float).toInt()
+          Double::class -> (c as Double).toInt()
+          else -> throw IllegalArgumentException("Unsupported type: $kClass")
+        }
+      }
+    }
+    return Tensor(newData, Int::class)
+  }
+
   fun data(): Array<Any> {
     return data.map {
       it.toArray { arrayOfNulls<Any>(cols) }
